@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gestion des utilisateurs et des groupes en ligne de commande sous Windows</title>
+<link href="assets/style.css" rel="stylesheet"/>
+<link href="assets/print.css" media="print" rel="stylesheet"/>
+</head>
+<body class="theme-powershell" id="top">
+<a class="back-to-top" href="#top" aria-label="Retour en haut">↑</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <section class="page-identity-strip page-identity-strip-topbar" aria-label="Informations principales de la leçon">
+      <article class="identity-card identity-card-person">
+        <div class="identity-media"><img src="img-fixes/anis.png" alt="Anis Ghaieb"/></div>
+        <div class="identity-copy"><strong>Anis Ghaieb</strong><span>baniss2002@gmail.com</span></div>
+      </article>
+      <article class="identity-card identity-card-course">
+        <div class="identity-copy"><strong>Automatisation et scripts</strong><span>Gestion des utilisateurs et des groupes sous Windows</span></div>
+      </article>
+      <article class="identity-card identity-card-college">
+        <div class="identity-media identity-media-logo"><img src="img-fixes/college.png" alt="Collège Universel"/></div>
+        <div class="identity-copy"><strong>Collège Universel</strong><span>Campus Montréal</span></div>
+      </article>
+    </section>
+  </div>
+</header>
+<main class="document document-powershell">
+  <header class="document-header document-header-hybrid">
+    <section class="hero-wrap hero-wrap-powershell hero-wrap-overlay" aria-label="Présentation de la leçon">
+      <div class="hero-image-box hero-image-box-overlay"><img id="heroImage" src="img-fixes/banniere.png" alt="Bannière de la leçon sur la gestion des utilisateurs et des groupes sous Windows"/></div>
+      <section class="hero-title-panel">
+        <span class="hero-kicker-badge">Cours 8</span>
+        <h1 class="lesson-title-hybrid hero-title-overlay">Gestion des utilisateurs et des groupes en ligne de commande sous Windows</h1>
+      </section>
+      <section class="lesson-intro-box lesson-intro-box-fullwidth">
+        <p class="lesson-subtitle-hybrid">Cette leçon présente les notions d’utilisateur et de groupe sous Windows, puis montre comment créer, afficher, modifier, désactiver et supprimer des comptes et des groupes à l’aide des commandes <strong>net user</strong> et <strong>net localgroup</strong>. Elle se termine par des exemples d’automatisation utiles pour l’administration courante.</p>
+      </section>
+    </section>
+    <section class="document-overview" id="sommaire" aria-label="Vue d’ensemble de la leçon">
+      <div class="overview-panel">
+        <h2 class="overview-title">Table des matières</h2>
+        <nav class="toc-nav" aria-label="Table des matières de la leçon">
+          <ul class="toc-list"><li class="toc-item toc-level-1"><a class="toc-link" href="#partie-1">Comprendre les notions de base</a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#partie-2">Créer et gérer les groupes locaux</a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#partie-3">Créer et gérer les utilisateurs</a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#partie-4">Automatiser et récapituler les opérations essentielles</a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#qcm-final">QCM final de validation</a></li></ul>
+        </nav>
+      </div>
+      <div class="overview-panel">
+        <h2 class="overview-title">Objectifs de la leçon</h2>
+        <ul class="goal-list"><li>Créer et gérer des groupes locaux : création, suppression et affichage.</li><li>Créer des utilisateurs puis les associer aux groupes existants.</li><li>Afficher la liste des utilisateurs d’un système Windows avec différents niveaux de détails.</li><li>Supprimer des utilisateurs et les retirer de groupes.</li><li>Automatiser certaines tâches courantes liées à la gestion des utilisateurs.</li></ul>
+      </div>
+    </section>
+  </header>
+  
+<section class="part" id="partie-1">
+<div class="part-header"><h2 class="part-title">Comprendre les notions de base</h2></div>
+<div class="part-body">
+  <section class="section-block line-section">
+    <h3 class="section-title">Notion d’utilisateur</h3>
+    <div class="section-body">
+      <p>Dans un système Windows, un utilisateur est une entité, une personne ou un service, qui possède un compte lui permettant d’accéder à l’ordinateur avec un ensemble de permissions déterminées. Un compte utilisateur peut comporter un nom, un mot de passe et des autorisations spécifiques.</p>
+      <ul>
+        <li>Des utilisateurs locaux, définis sur une seule machine.</li>
+        <li>Des utilisateurs standards, qui disposent de droits limités.</li>
+        <li>Des administrateurs, qui disposent de droits élevés.</li>
+      </ul>
+      <figure class="lesson-figure figure-medium"><img alt="Illustration d’un compte utilisateur Windows nommé Tom" src="img-lecon/2026-03-31%2014_51_49-Greenshot.png"/><figcaption>Exemple visuel d’un compte utilisateur local sous Windows.</figcaption></figure>
+      <div class="callout spaced-block lesson-callout"><strong>Idée clé :</strong> un compte utilisateur permet d’identifier précisément qui accède à la machine et avec quels droits.</div>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Notion de groupes</h3>
+    <div class="section-body">
+      <p>Un groupe est un ensemble d’utilisateurs qui partagent les mêmes droits ou les mêmes fonctions. Grâce aux groupes, on peut gérer les autorisations de manière collective, ce qui évite de configurer les droits utilisateur par utilisateur.</p>
+      <p>Le document distingue trois grandes catégories de groupes sous Windows :</p>
+      <ul>
+        <li>Les groupes locaux, définis sur une machine spécifique et valables uniquement sur cette machine.</li>
+        <li>Les groupes prédéfinis, comme <strong>Administrateurs</strong>, <strong>Utilisateurs</strong> ou <strong>Invités</strong>.</li>
+        <li>Les groupes personnalisés, créés par l’administrateur pour organiser les utilisateurs selon des rôles, des services ou des projets.</li>
+      </ul>
+      <p>Par exemple, on peut accorder un accès à un dossier partagé à tous les membres d’un groupe comme <strong>Comptabilité</strong> sans ajouter chaque utilisateur individuellement.</p>
+      <div class="callout spaced-block final-callout"><strong>Pourquoi c’est utile :</strong> les groupes simplifient la gestion des permissions et rendent l’administration d’un poste plus rapide et plus cohérente.</div>
+    </div>
+  </section>
+</div>
+</section>
+
+<section class="part" id="partie-2">
+<div class="part-header"><h2 class="part-title">Créer et gérer les groupes locaux</h2></div>
+<div class="part-body">
+  <section class="section-block line-section">
+    <h3 class="section-title">Créer un groupe local</h3>
+    <div class="section-body">
+      <p>Pour créer un groupe local personnalisé, on utilise la commande <strong>net localgroup</strong> suivie du nom du groupe et de l’option <strong>/add</strong>.</p>
+      <section class="syntax-card"><h4>Syntaxe générale</h4><pre data-help-title="Commande de création d’un groupe local" data-help-role="Cette commande crée un nouveau groupe local portant le nom indiqué.">net localgroup NomGroupe /add</pre></section>
+      <div class="duo-grid">
+        <section class="syntax-card"><h4>Exemple simple</h4><pre data-help-title="Exemple de création d’un groupe" data-help-role="Cette ligne crée un groupe local nommé Comptables.">net localgroup Comptables /add</pre></section>
+        <section class="syntax-card"><h4>Exemples successifs</h4><pre data-help-title="Suite de créations de groupes" data-help-role="Ces lignes créent trois groupes locaux l’un après l’autre.">net localgroup GroupeA /add
+net localgroup GroupeB /add
+net localgroup GroupeC /add</pre></section>
+      </div>
+      <div class="spaced-block"><section class="code-window" data-help-title="Script PowerShell de création de groupes" data-help-role="Ce script parcourt une liste de noms puis crée automatiquement les groupes locaux correspondants.">
+<div class="window-header">
+<div class="window-controls"><span></span><span></span><span></span></div>
+<div class="window-title">Administrateur : Windows PowerShell</div>
+</div>
+<div class="code-body">
+<div class="terminal-intro">Création de plusieurs groupes avec une boucle PowerShell</div>
+<div class="code-content"><div class="line" data-help-title="Tableau de groupes" data-help-role="Cette ligne prépare la liste des groupes à créer automatiquement."><span class="line-no">1</span><span class="line-text">$groupes = @("GroupeA", "GroupeB", "GroupeC")</span></div><div class="line" data-help-title="Boucle foreach" data-help-role="Cette ligne parcourt un par un les noms contenus dans le tableau $groupes."><span class="line-no">2</span><span class="line-text">foreach ($groupe in $groupes) {</span></div><div class="line" data-help-title="Création du groupe" data-help-role="Cette ligne crée le groupe local correspondant au nom actuellement parcouru."><span class="line-no">3</span><span class="line-text">  net localgroup $groupe /add</span></div><div class="line" data-help-title="Message de confirmation" data-help-role="Cette ligne affiche un message de suivi pour confirmer la création du groupe."><span class="line-no">4</span><span class="line-text">  Write-Output "Groupe $groupe créé."</span></div><div class="line" data-help-title="Fin de boucle" data-help-role="Cette ligne ferme la boucle foreach."><span class="line-no">5</span><span class="line-text">}</span></div></div>
+</div>
+</section></div>
+      <figure class="lesson-figure figure-wide"><img alt="Résultat PowerShell de la création automatique de plusieurs groupes" src="img-lecon/2026-03-31%2014_51_55-Greenshot.png"/><figcaption>Sortie affichée après la création de plusieurs groupes locaux par une boucle PowerShell.</figcaption></figure>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Supprimer un groupe local</h3>
+    <div class="section-body">
+      <p>Pour supprimer un groupe, on utilise la même commande avec l’option <strong>/delete</strong>.</p>
+      <div class="duo-grid">
+        <section class="syntax-card"><h4>Syntaxe générale</h4><pre data-help-title="Commande de suppression d’un groupe" data-help-role="Cette commande supprime le groupe local indiqué.">net localgroup NomGroupe /delete</pre></section>
+        <section class="syntax-card"><h4>Exemple</h4><pre data-help-title="Exemple de suppression" data-help-role="Cette ligne supprime le groupe local Secretaires.">net localgroup Secretaires /delete</pre></section>
+      </div>
+      <div class="callout spaced-block warning-callout"><strong>Prudence :</strong> avant de supprimer un groupe, il est recommandé de vérifier qu’il n’est plus utilisé pour accorder des droits importants.</div>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Afficher tous les groupes locaux</h3>
+    <div class="section-body">
+      <p>Pour afficher la liste complète des groupes définis localement sur le système, la commande de base est la suivante :</p>
+      <section class="syntax-card"><h4>Commande à utiliser</h4><pre data-help-title="Affichage des groupes locaux" data-help-role="Cette commande liste tous les groupes locaux présents sur la machine.">net localgroup</pre></section>
+      <p>Cette commande permet de vérifier quels groupes sont déjà présents sur la machine avant d’en créer de nouveaux ou d’en supprimer.</p>
+      <figure class="lesson-figure figure-wide"><img alt="Liste des groupes locaux affichée dans Windows PowerShell" src="img-lecon/2026-03-31%2014_52_02-Greenshot.png"/><figcaption>Exemple de sortie de la commande net localgroup.</figcaption></figure>
+    </div>
+  </section>
+</div>
+</section>
+
+<section class="part" id="partie-3">
+<div class="part-header"><h2 class="part-title">Créer et gérer les utilisateurs</h2></div>
+<div class="part-body">
+  <section class="section-block line-section">
+    <h3 class="section-title">Créer un utilisateur avec un mot de passe</h3>
+    <div class="section-body">
+      <p>Pour créer un utilisateur en ligne de commande, on utilise <strong>net user</strong> en indiquant le nom du compte, le mot de passe puis l’option <strong>/add</strong>.</p>
+      <div class="duo-grid">
+        <section class="syntax-card"><h4>Syntaxe générale</h4><pre data-help-title="Commande de création d’un utilisateur" data-help-role="Cette commande crée un nouveau compte local avec le mot de passe indiqué.">net user NomUtilisateur MotDePasse /add</pre></section>
+        <section class="syntax-card"><h4>Exemple</h4><pre data-help-title="Exemple de création d’un utilisateur" data-help-role="Cette ligne crée l’utilisateur local Etudiant1 avec le mot de passe affiché.">net user Etudiant1 P@ssw0rd! /add</pre></section>
+      </div>
+      <figure class="lesson-figure figure-medium"><img alt="Création d’un utilisateur local Etudiant1 dans PowerShell" src="img-lecon/2026-03-31%2014_52_08-Greenshot.png"/><figcaption>Exemple de création d’un utilisateur avec un mot de passe.</figcaption></figure>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Créer plusieurs utilisateurs à partir d’une liste</h3>
+    <div class="section-body">
+      <p>Le document présente ensuite un script PowerShell qui crée plusieurs utilisateurs automatiquement. Le script s’appuie sur une liste de noms, génère un mot de passe puis crée les comptes un par un.</p>
+      <div class="spaced-block"><section class="code-window" data-help-title="Script PowerShell de création d’utilisateurs" data-help-role="Ce script prépare une liste d’utilisateurs, génère un mot de passe puis crée les comptes localement.">
+<div class="window-header">
+<div class="window-controls"><span></span><span></span><span></span></div>
+<div class="window-title">Administrateur : Windows PowerShell</div>
+</div>
+<div class="code-body">
+<div class="terminal-intro">Création automatique de plusieurs utilisateurs</div>
+<div class="code-content"><div class="line" data-help-title="Liste des utilisateurs" data-help-role="Cette ligne contient les comptes à créer automatiquement."><span class="line-no">1</span><span class="line-text">$users = @("User10", "User11", "User12")</span></div><div class="line" data-help-title="Début de fonction" data-help-role="Cette ligne définit une fonction chargée de produire un mot de passe."><span class="line-no">2</span><span class="line-text">function Generer-MotDePasse {</span></div><div class="line" data-help-title="Jeu de lettres" data-help-role="Cette ligne prépare la liste des lettres possibles pour le mot de passe."><span class="line-no">3</span><span class="line-text">  $lettres = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray()</span></div><div class="line" data-help-title="Jeu de chiffres" data-help-role="Cette ligne prépare la liste des chiffres possibles."><span class="line-no">4</span><span class="line-text">  $chiffres = "0123456789".ToCharArray()</span></div><div class="line" data-help-title="Caractères spéciaux" data-help-role="Cette ligne prépare la liste des caractères spéciaux autorisés."><span class="line-no">5</span><span class="line-text">  $speciaux = "!@#$%*?".ToCharArray()</span></div><div class="line" data-help-title="Base du mot de passe" data-help-role="Cette ligne construit une première partie de six lettres choisies aléatoirement."><span class="line-no">6</span><span class="line-text">  $mot = -join (1..6 | ForEach-Object { Get-Random -InputObject $lettres })</span></div><div class="line" data-help-title="Ajout d’un chiffre" data-help-role="Cette ligne ajoute un chiffre au mot de passe."><span class="line-no">7</span><span class="line-text">  $mot += Get-Random -InputObject $chiffres</span></div><div class="line" data-help-title="Ajout d’un caractère spécial" data-help-role="Cette ligne ajoute un caractère spécial au mot de passe."><span class="line-no">8</span><span class="line-text">  $mot += Get-Random -InputObject $speciaux</span></div><div class="line" data-help-title="Valeur renvoyée" data-help-role="Cette ligne renvoie le mot de passe généré à la suite du script."><span class="line-no">9</span><span class="line-text">  return $mot</span></div><div class="line" data-help-title="Fin de fonction" data-help-role="Cette ligne ferme la fonction Generer-MotDePasse."><span class="line-no">10</span><span class="line-text">}</span></div><div class="line" data-help-title="Séparateur visuel" data-help-role="Cette ligne affiche une ligne de séparation dans la console."><span class="line-no">11</span><span class="line-text">Write-Output "==========================================="</span></div><div class="line" data-help-title="Titre de sortie" data-help-role="Cette ligne annonce l’opération en cours dans la console."><span class="line-no">12</span><span class="line-text">Write-Output "Création des utilisateurs avec mot de passe"</span></div><div class="line" data-help-title="Boucle de création" data-help-role="Cette ligne parcourt chaque nom d’utilisateur contenu dans $users."><span class="line-no">13</span><span class="line-text">foreach ($u in $users) {</span></div><div class="line" data-help-title="Génération du mot de passe" data-help-role="Cette ligne crée un nouveau mot de passe pour l’utilisateur courant."><span class="line-no">14</span><span class="line-text">  $pw = Generer-MotDePasse</span></div><div class="line" data-help-title="Création du compte" data-help-role="Cette ligne crée réellement l’utilisateur local avec le mot de passe généré."><span class="line-no">15</span><span class="line-text">  net user $u $pw /add</span></div><div class="line" data-help-title="Affichage du résultat" data-help-role="Cette ligne affiche le compte créé et le mot de passe associé."><span class="line-no">16</span><span class="line-text">  Write-Output "Utilisateur : $u    Mot de passe : $pw"</span></div><div class="line" data-help-title="Fin de boucle" data-help-role="Cette ligne termine la boucle de création automatique."><span class="line-no">17</span><span class="line-text">}</span></div></div>
+</div>
+</section></div>
+      <figure class="lesson-figure figure-wide"><img alt="Exécution d’un script de création de plusieurs utilisateurs avec génération de mots de passe" src="img-lecon/2026-03-31%2014_52_24-.png"/><figcaption>Exemple d’exécution d’un script PowerShell de création automatique d’utilisateurs.</figcaption></figure>
+      <div class="callout spaced-block lesson-callout"><strong>Observation :</strong> la sortie affiche le nom de chaque utilisateur créé ainsi que le mot de passe attribué pendant l’exécution du script.</div>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Ajouter des utilisateurs à des groupes</h3>
+    <div class="section-body">
+      <p>L’ajout d’un utilisateur à un groupe se fait à l’aide de la commande suivante :</p>
+      <section class="syntax-card"><h4>Syntaxe générale</h4><pre data-help-title="Commande d’ajout à un groupe" data-help-role="Cette commande ajoute l’utilisateur indiqué au groupe local choisi.">net localgroup NomGroupe NomUtilisateur /add</pre></section>
+      <section class="syntax-card"><h4>Exemples</h4><pre data-help-title="Exemples d’ajout à des groupes" data-help-role="Ces lignes associent plusieurs utilisateurs aux groupes locaux GroupeA et GroupeB.">net localgroup GroupeA User1 /add
+net localgroup GroupeA User2 /add
+net localgroup GroupeB User3 /add
+net localgroup GroupeB User4 /add
+net localgroup GroupeB User5 /add</pre></section>
+      <figure class="lesson-figure figure-wide"><img alt="Ajout de plusieurs utilisateurs à des groupes locaux dans PowerShell" src="img-lecon/2026-03-31%2014_52_31-Greenshot.png"/><figcaption>Exemple d’ajout de plusieurs utilisateurs à des groupes locaux.</figcaption></figure>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Modifier les informations d’un utilisateur</h3>
+    <div class="section-body">
+      <p>Pour modifier un utilisateur, par exemple pour changer son mot de passe, on utilise la commande suivante :</p>
+      <div class="duo-grid">
+        <section class="syntax-card"><h4>Syntaxe générale</h4><pre data-help-title="Commande de modification d’un mot de passe" data-help-role="Cette commande remplace le mot de passe du compte indiqué.">net user NomUtilisateur NouveauMotDePasse</pre></section>
+        <section class="syntax-card"><h4>Exemple</h4><pre data-help-title="Exemple de changement de mot de passe" data-help-role="Cette ligne attribue un nouveau mot de passe à l’utilisateur User1.">net user User1 NewP@ss123</pre></section>
+      </div>
+      <p>Cette vérification est utile pour confirmer la présence du compte avant de le modifier.</p>
+      <figure class="lesson-figure figure-medium"><img alt="Modification du mot de passe de l’utilisateur User1" src="img-lecon/2026-03-31%2014_52_36-Greenshot.png"/><figcaption>Exemple de changement du mot de passe d’un utilisateur.</figcaption></figure>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Afficher la liste des utilisateurs du système</h3>
+    <div class="section-body">
+      <p>La commande de base pour afficher tous les utilisateurs d’un système Windows est :</p>
+      <section class="syntax-card"><h4>Commande à utiliser</h4><pre data-help-title="Affichage de tous les utilisateurs" data-help-role="Cette commande liste tous les utilisateurs locaux définis sur l’ordinateur.">net user</pre></section>
+      <ul>
+        <li>Cette commande liste tous les utilisateurs locaux définis sur l’ordinateur.</li>
+        <li>Elle est utile pour vérifier la présence d’un compte avant de le modifier.</li>
+      </ul>
+      <figure class="lesson-figure figure-wide"><img alt="Liste des comptes utilisateurs locaux affichée par la commande net user" src="img-lecon/2026-03-31%2014_52_44-Greenshot.png"/><figcaption>Exemple de sortie de la commande net user.</figcaption></figure>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Afficher les détails d’un utilisateur</h3>
+    <div class="section-body">
+      <p>Pour obtenir plus d’informations sur un utilisateur spécifique, on utilise la commande suivante :</p>
+      <section class="syntax-card"><h4>Commande à utiliser</h4><pre data-help-title="Détails d’un utilisateur" data-help-role="Cette commande affiche des informations détaillées sur le compte indiqué.">net user NomUtilisateur</pre></section>
+      <ul>
+        <li>Il faut remplacer <strong>NomUtilisateur</strong> par le nom réel du compte.</li>
+        <li>La commande affiche notamment le groupe auquel appartient l’utilisateur, la date de dernière connexion et plusieurs informations liées au compte.</li>
+      </ul>
+      <figure class="lesson-figure figure-wide"><img alt="Détails complets d’un utilisateur affichés par net user banis" src="img-lecon/2026-03-31%2014_52_53-Greenshot.png"/><figcaption>Exemple d’affichage détaillé pour un utilisateur spécifique.</figcaption></figure>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Afficher les utilisateurs d’un groupe spécifique</h3>
+    <div class="section-body">
+      <p>Pour voir quels utilisateurs appartiennent à un groupe spécifique, on indique simplement le nom du groupe après <strong>net localgroup</strong>.</p>
+      <div class="duo-grid">
+        <section class="syntax-card"><h4>Syntaxe générale</h4><pre data-help-title="Affichage des membres d’un groupe" data-help-role="Cette commande affiche les utilisateurs appartenant au groupe local indiqué.">net localgroup NomGroupe</pre></section>
+        <section class="syntax-card"><h4>Exemple</h4><pre data-help-title="Exemple d’affichage des membres" data-help-role="Cette ligne affiche les membres du groupe Administrateurs.">net localgroup Administrateurs</pre></section>
+      </div>
+      <figure class="lesson-figure figure-wide"><img alt="Membres du groupe Administrateurs affichés dans PowerShell" src="img-lecon/2026-03-31%2014_53_00-Greenshot.png"/><figcaption>Exemple d’affichage des utilisateurs d’un groupe spécifique.</figcaption></figure>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Supprimer un utilisateur d’un groupe et supprimer un utilisateur du système</h3>
+    <div class="section-body">
+      <p>Pour retirer un utilisateur d’un groupe, on utilise l’option <strong>/delete</strong> sur la commande <strong>net localgroup</strong>. Pour supprimer totalement un utilisateur du système, on utilise l’option <strong>/delete</strong> avec <strong>net user</strong>.</p>
+      <div class="duo-grid">
+        <section class="syntax-card"><h4>Retirer un utilisateur d’un groupe</h4><pre data-help-title="Suppression d’un utilisateur d’un groupe" data-help-role="Ces commandes retirent l’utilisateur indiqué du groupe local ciblé.">net localgroup NomGroupe NomUtilisateur /delete
+
+Exemples :
+net localgroup GroupeA User1 /delete
+net localgroup GroupeB User3 /delete</pre></section>
+        <section class="syntax-card"><h4>Supprimer un utilisateur du système</h4><pre data-help-title="Suppression d’un utilisateur du système" data-help-role="Cette commande supprime complètement le compte utilisateur indiqué.">net user NomUtilisateur /delete
+
+Exemple :
+net user User1 /delete</pre></section>
+      </div>
+      <div class="callout spaced-block warning-callout"><strong>Différence importante :</strong> retirer un utilisateur d’un groupe ne supprime pas son compte ; cela supprime seulement son appartenance à ce groupe.</div>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Désactiver un utilisateur sans le supprimer</h3>
+    <div class="section-body">
+      <p>Plutôt que de supprimer un utilisateur, on peut le désactiver temporairement. Cette approche permet de conserver le compte sans le rendre actif.</p>
+      <div class="duo-grid">
+        <section class="syntax-card"><h4>Pour désactiver</h4><pre data-help-title="Désactivation d’un compte" data-help-role="Cette commande désactive le compte indiqué sans le supprimer.">net user NomUtilisateur /active:no
+
+Exemple :
+net user User1 /active:no</pre></section>
+        <section class="syntax-card"><h4>Pour réactiver</h4><pre data-help-title="Réactivation d’un compte" data-help-role="Cette commande réactive un compte précédemment désactivé.">net user User1 /active:yes</pre></section>
+      </div>
+      <figure class="lesson-figure figure-wide"><img alt="Désactivation du compte User11 et vérification de son état" src="img-lecon/2026-03-31%2014_53_14-.png"/><figcaption>Exemple de désactivation d’un utilisateur puis consultation de son état.</figcaption></figure>
+    </div>
+  </section>
+</div>
+</section>
+
+<section class="part" id="partie-4">
+<div class="part-header"><h2 class="part-title">Automatiser et récapituler les opérations essentielles</h2></div>
+<div class="part-body">
+  <section class="section-block line-section">
+    <h3 class="section-title">Exemples d’automatisation des tâches</h3>
+    <div class="section-body">
+      <p>La dernière partie du document rappelle que plusieurs opérations peuvent être automatisées dans le contexte de la gestion des utilisateurs et des groupes.</p>
+      <ul>
+        <li>Créer des utilisateurs automatiquement à partir d’une liste.</li>
+        <li>Attribuer automatiquement un mot de passe sécurisé à l’aide d’un générateur aléatoire.</li>
+        <li>Créer un script de suppression automatique des utilisateurs inactifs.</li>
+        <li>Envoyer un rapport périodique des comptes créés et supprimés.</li>
+        <li>Programmer la désactivation des comptes inactifs après un certain temps.</li>
+        <li>Créer des groupes puis y ajouter des utilisateurs automatiquement.</li>
+        <li>Vérifier régulièrement les droits des utilisateurs et signaler des modifications suspectes.</li>
+        <li>Réinitialiser automatiquement les mots de passe des comptes expirés par script PowerShell.</li>
+      </ul>
+      <div class="callout spaced-block final-callout"><strong>À retenir :</strong> l’automatisation permet de gagner du temps, de réduire les erreurs répétitives et de standardiser les tâches d’administration.</div>
+    </div>
+  </section>
+  <section class="section-block line-section">
+    <h3 class="section-title">Tableau récapitulatif des commandes essentielles</h3>
+    <div class="section-body">
+      <p>Ce tableau regroupe les commandes les plus importantes vues dans la leçon afin de retrouver rapidement leur rôle principal.</p>
+      <div class="table-wrap spaced-block"><table class="summary-table"><thead><tr><th>Opération</th><th>Commande</th><th>Rôle principal</th></tr></thead><tbody><tr><td>Créer un groupe local</td><td><code>net localgroup NomGroupe /add</code></td><td>Ajoute un nouveau groupe local.</td></tr><tr><td>Supprimer un groupe local</td><td><code>net localgroup NomGroupe /delete</code></td><td>Supprime un groupe local existant.</td></tr><tr><td>Afficher les groupes locaux</td><td><code>net localgroup</code></td><td>Liste les groupes présents sur la machine.</td></tr><tr><td>Créer un utilisateur</td><td><code>net user NomUtilisateur MotDePasse /add</code></td><td>Crée un compte local avec mot de passe.</td></tr><tr><td>Modifier le mot de passe</td><td><code>net user NomUtilisateur NouveauMotDePasse</code></td><td>Met à jour le mot de passe du compte.</td></tr><tr><td>Afficher tous les utilisateurs</td><td><code>net user</code></td><td>Liste les comptes locaux définis sur l’ordinateur.</td></tr><tr><td>Afficher les détails d’un compte</td><td><code>net user NomUtilisateur</code></td><td>Affiche les informations détaillées d’un compte.</td></tr><tr><td>Ajouter un utilisateur à un groupe</td><td><code>net localgroup NomGroupe NomUtilisateur /add</code></td><td>Associe un utilisateur à un groupe local.</td></tr><tr><td>Retirer un utilisateur d’un groupe</td><td><code>net localgroup NomGroupe NomUtilisateur /delete</code></td><td>Retire l’utilisateur du groupe indiqué.</td></tr><tr><td>Désactiver un compte</td><td><code>net user NomUtilisateur /active:no</code></td><td>Rend le compte inactif sans le supprimer.</td></tr></tbody></table></div>
+    </div>
+  </section>
+</div>
+</section>
+
+  
+<section class="card qcm-card" id="qcm-final">
+<h2>QCM final de validation</h2>
+<p class="qcm-access-note">Utilise la touche Tab pour parcourir les choix puis valide avec le bouton final.</p>
+<p class="qcm-intro">Réponds aux 10 questions ci-dessous, puis valide l’ensemble avec le bouton final. La réussite est obtenue à partir de <strong>6 bonnes réponses sur 10</strong>.</p>
+<div id="qcmFinal">
+  <div class="qcm-form"><article class="qcm-question" data-correct="a" data-hint="Relis la section « Créer un groupe local »."><h3 class="qcm-question-title">Question 1 — Quelle commande permet de créer un groupe local nommé Comptables ?</h3><div class="qcm-options"><label class="qcm-option" for="q1-a"><input id="q1-a" name="q1" type="radio" value="a"/><span>net localgroup Comptables /add</span></label><label class="qcm-option" for="q1-b"><input id="q1-b" name="q1" type="radio" value="b"/><span>net user Comptables /add</span></label><label class="qcm-option" for="q1-c"><input id="q1-c" name="q1" type="radio" value="c"/><span>net localgroup /show Comptables</span></label><label class="qcm-option" for="q1-d"><input id="q1-d" name="q1" type="radio" value="d"/><span>net user Comptables P@ssw0rd! /add</span></label></div></article><article class="qcm-question" data-correct="c" data-hint="Relis la notion de groupes au début de la leçon."><h3 class="qcm-question-title">Question 2 — Quel est l’intérêt principal d’un groupe sous Windows ?</h3><div class="qcm-options"><label class="qcm-option" for="q2-a"><input id="q2-a" name="q2" type="radio" value="a"/><span>Créer automatiquement un mot de passe pour chaque utilisateur.</span></label><label class="qcm-option" for="q2-b"><input id="q2-b" name="q2" type="radio" value="b"/><span>Supprimer tous les comptes inactifs sans vérification.</span></label><label class="qcm-option" for="q2-c"><input id="q2-c" name="q2" type="radio" value="c"/><span>Gérer des autorisations de façon collective pour plusieurs utilisateurs.</span></label><label class="qcm-option" for="q2-d"><input id="q2-d" name="q2" type="radio" value="d"/><span>Remplacer totalement les comptes utilisateurs individuels.</span></label></div></article><article class="qcm-question" data-correct="d" data-hint="Relis la section « Afficher tous les groupes locaux »."><h3 class="qcm-question-title">Question 3 — Quelle commande affiche la liste complète des groupes locaux d’une machine ?</h3><div class="qcm-options"><label class="qcm-option" for="q3-a"><input id="q3-a" name="q3" type="radio" value="a"/><span>net group</span></label><label class="qcm-option" for="q3-b"><input id="q3-b" name="q3" type="radio" value="b"/><span>net user</span></label><label class="qcm-option" for="q3-c"><input id="q3-c" name="q3" type="radio" value="c"/><span>net localgroup NomGroupe</span></label><label class="qcm-option" for="q3-d"><input id="q3-d" name="q3" type="radio" value="d"/><span>net localgroup</span></label></div></article><article class="qcm-question" data-correct="b" data-hint="Relis la section « Créer un utilisateur avec un mot de passe »."><h3 class="qcm-question-title">Question 4 — Quelle commande correspond à la création d’un utilisateur avec mot de passe ?</h3><div class="qcm-options"><label class="qcm-option" for="q4-a"><input id="q4-a" name="q4" type="radio" value="a"/><span>net user Etudiant1 /delete</span></label><label class="qcm-option" for="q4-b"><input id="q4-b" name="q4" type="radio" value="b"/><span>net user Etudiant1 P@ssw0rd! /add</span></label><label class="qcm-option" for="q4-c"><input id="q4-c" name="q4" type="radio" value="c"/><span>net localgroup Etudiant1 P@ssw0rd! /add</span></label><label class="qcm-option" for="q4-d"><input id="q4-d" name="q4" type="radio" value="d"/><span>net user /active:yes Etudiant1</span></label></div></article><article class="qcm-question" data-correct="a" data-hint="Relis la section « Modifier les informations d’un utilisateur »."><h3 class="qcm-question-title">Question 5 — Que fait la commande net user User1 NewP@ss123 ?</h3><div class="qcm-options"><label class="qcm-option" for="q5-a"><input id="q5-a" name="q5" type="radio" value="a"/><span>Elle change le mot de passe de l’utilisateur User1.</span></label><label class="qcm-option" for="q5-b"><input id="q5-b" name="q5" type="radio" value="b"/><span>Elle désactive l’utilisateur User1.</span></label><label class="qcm-option" for="q5-c"><input id="q5-c" name="q5" type="radio" value="c"/><span>Elle supprime l’utilisateur User1.</span></label><label class="qcm-option" for="q5-d"><input id="q5-d" name="q5" type="radio" value="d"/><span>Elle ajoute User1 au groupe Administrateurs.</span></label></div></article><article class="qcm-question" data-correct="b" data-hint="Relis la section « Afficher la liste des utilisateurs du système »."><h3 class="qcm-question-title">Question 6 — Quelle commande est utilisée pour afficher tous les utilisateurs locaux du système ?</h3><div class="qcm-options"><label class="qcm-option" for="q6-a"><input id="q6-a" name="q6" type="radio" value="a"/><span>net localgroup</span></label><label class="qcm-option" for="q6-b"><input id="q6-b" name="q6" type="radio" value="b"/><span>net user</span></label><label class="qcm-option" for="q6-c"><input id="q6-c" name="q6" type="radio" value="c"/><span>whoami</span></label><label class="qcm-option" for="q6-d"><input id="q6-d" name="q6" type="radio" value="d"/><span>Get-Process</span></label></div></article><article class="qcm-question" data-correct="c" data-hint="Relis la section « Afficher les détails d’un utilisateur »."><h3 class="qcm-question-title">Question 7 — Quelle commande permet d’afficher les détails complets d’un utilisateur précis ?</h3><div class="qcm-options"><label class="qcm-option" for="q7-a"><input id="q7-a" name="q7" type="radio" value="a"/><span>net localgroup Administrateurs</span></label><label class="qcm-option" for="q7-b"><input id="q7-b" name="q7" type="radio" value="b"/><span>net user /detail</span></label><label class="qcm-option" for="q7-c"><input id="q7-c" name="q7" type="radio" value="c"/><span>net user NomUtilisateur</span></label><label class="qcm-option" for="q7-d"><input id="q7-d" name="q7" type="radio" value="d"/><span>net localgroup NomUtilisateur</span></label></div></article><article class="qcm-question" data-correct="d" data-hint="Relis la section sur la suppression d’un utilisateur d’un groupe."><h3 class="qcm-question-title">Question 8 — Quelle commande retire User3 du groupe GroupeB ?</h3><div class="qcm-options"><label class="qcm-option" for="q8-a"><input id="q8-a" name="q8" type="radio" value="a"/><span>net user User3 /delete</span></label><label class="qcm-option" for="q8-b"><input id="q8-b" name="q8" type="radio" value="b"/><span>net localgroup GroupeB /delete User3</span></label><label class="qcm-option" for="q8-c"><input id="q8-c" name="q8" type="radio" value="c"/><span>net localgroup User3 GroupeB /delete</span></label><label class="qcm-option" for="q8-d"><input id="q8-d" name="q8" type="radio" value="d"/><span>net localgroup GroupeB User3 /delete</span></label></div></article><article class="qcm-question" data-correct="a" data-hint="Relis la section « Désactiver un utilisateur sans le supprimer »."><h3 class="qcm-question-title">Question 9 — Que fait la commande net user User1 /active:no ?</h3><div class="qcm-options"><label class="qcm-option" for="q9-a"><input id="q9-a" name="q9" type="radio" value="a"/><span>Elle désactive temporairement le compte User1.</span></label><label class="qcm-option" for="q9-b"><input id="q9-b" name="q9" type="radio" value="b"/><span>Elle supprime définitivement le compte User1.</span></label><label class="qcm-option" for="q9-c"><input id="q9-c" name="q9" type="radio" value="c"/><span>Elle change le mot de passe du compte User1.</span></label><label class="qcm-option" for="q9-d"><input id="q9-d" name="q9" type="radio" value="d"/><span>Elle ajoute User1 au groupe Administrateurs.</span></label></div></article><article class="qcm-question" data-correct="c" data-hint="Relis la dernière partie sur les tâches automatisables."><h3 class="qcm-question-title">Question 10 — Laquelle des propositions suivantes correspond à un exemple d’automatisation cité dans la leçon ?</h3><div class="qcm-options"><label class="qcm-option" for="q10-a"><input id="q10-a" name="q10" type="radio" value="a"/><span>Dessiner l’interface graphique de Windows.</span></label><label class="qcm-option" for="q10-b"><input id="q10-b" name="q10" type="radio" value="b"/><span>Remplacer tous les groupes locaux par des groupes réseau.</span></label><label class="qcm-option" for="q10-c"><input id="q10-c" name="q10" type="radio" value="c"/><span>Attribuer automatiquement un mot de passe sécurisé en utilisant un générateur aléatoire.</span></label><label class="qcm-option" for="q10-d"><input id="q10-d" name="q10" type="radio" value="d"/><span>Désinstaller PowerShell après chaque création de compte.</span></label></div></article></div>
+  <div class="qcm-actions"><button class="qcm-submit" type="button">Valider le QCM</button></div>
+</div>
+</section>
+
+  <footer class="course-footer">
+    <div class="course-footer-left">Auteur : © <a class="footer-author-link" href="droits.html">Anis Ghaieb</a> — Tous droits réservés</div>
+    <div class="course-footer-right">2026</div>
+  </footer>
+</main>
+<div class="qcm-overlay" id="qcmOverlay" aria-hidden="true">
+  <div class="qcm-modal failure" role="dialog" aria-modal="true" aria-labelledby="qcmModalTitle">
+    <div class="qcm-modal-label">Validation à reprendre</div>
+    <h3 class="qcm-modal-title" id="qcmModalTitle">Résultat du QCM</h3>
+    <p class="qcm-modal-text">Le message de résultat apparaîtra ici.</p>
+    <div class="qcm-modal-hints" hidden>
+      <h4 class="qcm-modal-hints-title">Pistes de relecture</h4>
+      <ul class="qcm-hints"></ul>
+    </div>
+    <div class="qcm-modal-actions">
+      <button class="qcm-retry" type="button">Reprendre</button>
+      <button class="qcm-close" type="button">Fermer</button>
+    </div>
+  </div>
+</div>
+<script src="assets/script.js"></script>
+</body>
+</html>
